@@ -1,6 +1,10 @@
 package com.pokemonreview.api.controller;
 
+import com.pokemonreview.api.dto.PokemonDTO;
 import com.pokemonreview.api.model.Pokemon;
+import com.pokemonreview.api.service.PokemonService;
+import com.pokemonreview.api.service.impl.PokemonServiceImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +15,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/")
 public class PokemonController {
+    private PokemonServiceImpl pokemonService;
+
+    @Autowired
+    public PokemonController(PokemonServiceImpl pokemonService) {
+        this.pokemonService = pokemonService;
+    }
+
     @GetMapping("pokemon")
     public ResponseEntity<List<Pokemon>> getPokemons() {
         List<Pokemon> pokemons = new ArrayList<>();
@@ -29,8 +40,8 @@ public class PokemonController {
 
     @PostMapping("pokemon")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Pokemon> createPokemon(@RequestBody Pokemon pokemon) {
-        return new ResponseEntity<>(pokemon, HttpStatus.CREATED);
+    public ResponseEntity<PokemonDTO> createPokemon(@RequestBody PokemonDTO pokemonDTO) {
+        return new ResponseEntity<>(pokemonService.createPokemon(pokemonDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("pokemon/{id}")
