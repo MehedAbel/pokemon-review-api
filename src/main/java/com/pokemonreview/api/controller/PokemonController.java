@@ -1,6 +1,7 @@
 package com.pokemonreview.api.controller;
 
 import com.pokemonreview.api.dto.PokemonDTO;
+import com.pokemonreview.api.dto.PokemonResponse;
 import com.pokemonreview.api.model.Pokemon;
 import com.pokemonreview.api.service.PokemonService;
 import com.pokemonreview.api.service.impl.PokemonServiceImpl;
@@ -23,19 +24,16 @@ public class PokemonController {
     }
 
     @GetMapping("pokemon")
-    public ResponseEntity<List<Pokemon>> getPokemons() {
-        List<Pokemon> pokemons = new ArrayList<>();
-
-        pokemons.add(new Pokemon(1, "Squirtle", "Water"));
-        pokemons.add(new Pokemon(2, "Pikachu", "Electric"));
-        pokemons.add(new Pokemon(3, "Charmander", "Fire"));
-
-        return ResponseEntity.ok(pokemons);
+    public ResponseEntity<PokemonResponse> getAllPokemon(
+            @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+            @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize
+    ) {
+        return new ResponseEntity<>(pokemonService.getAllPokemon(pageNo, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("pokemon/{id}")
-    public Pokemon pokemonDetail(@PathVariable("id") int id) {
-        return new Pokemon(id, "Squirtle", "Water");
+    public ResponseEntity<PokemonDTO> pokemonDetail(@PathVariable("id") int id) {
+        return new ResponseEntity<>(pokemonService.getPokemonById(id), HttpStatus.OK);
     }
 
     @PostMapping("pokemon")
@@ -45,12 +43,14 @@ public class PokemonController {
     }
 
     @PutMapping("pokemon/{id}")
-    public ResponseEntity<Pokemon> updatePokemon(@PathVariable("id") int id, @RequestBody Pokemon pokemon) {
-        return ResponseEntity.ok(pokemon);
+    public ResponseEntity<PokemonDTO> updatePokemon(@PathVariable("id") int id, @RequestBody PokemonDTO pokemonDTO) {
+        PokemonDTO response = pokemonService.updatePokemon(pokemonDTO, id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("pokemon/{id}")
     public ResponseEntity<String> deletePokemon(@PathVariable("id") int id) {
-        return ResponseEntity.ok("Pokemon deleted successfully");
+        pokemonService.deletePokemon(id);
+        return new ResponseEntity<>("Pokemon deleted", HttpStatus.OK);
     }
 }
